@@ -69,13 +69,13 @@ function webform_protected_downloads_token_info() {
 function webform_protected_downloads_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
   $replacements = [];
 
-  if (isset($tokens['protected_download_url']) && isset($data['entity'])) {
+  if (isset($tokens['protected_download_url']) && (isset($data['webform_submission']) || (isset($data['entity_type']) && $data['entity_type'] == 'webform_submission'))) {
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'protected_download_url':
 
           // Find a file hash for current submission.
-          $webformSubmission = $data['entity'];
+          $webformSubmission = isset($data['webform_submission']) ? $data['webform_submission'] : $data['entity'];
           $webformProtectedDownloadsManager = \Drupal::service('webform_protected_downloads.manager');
           $webformProtectedDownload = $webformProtectedDownloadsManager->getSubmissionByUuid($webformSubmission->uuid());
           $hash = $webformProtectedDownload->getHash();
